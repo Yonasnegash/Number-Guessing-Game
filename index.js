@@ -19,7 +19,7 @@ function prompt(query) {
     return new Promise((resolve) => rl.question(query, resolve))
 }
 
-async function main() {
+async function playGame() {
     console.log("Welcome to the Number Guessing Game!");
     console.log("I'm thinking of a number between 1 and 100.");
 
@@ -37,7 +37,9 @@ async function main() {
 
     const { name, chances } = DIFFICULTY_LEVEL[choice]
     attemptsLeft = chances
+    let attemptsMade = 0
     targetNumber = Math.floor(Math.random() * 100) + 1
+
     console.log(`\nGreat you have selected the ${name} difficulty level.`)
     console.log(`\nYou have ${chances} chances. Let's start the game!`)
 
@@ -50,11 +52,12 @@ async function main() {
             continue;
         }
 
+        attemptsMade++
         attemptsLeft--
 
 
         if (guess === targetNumber) {
-            console.log(`Congratulations! You have guessed the correct number in ${attemptsLeft} attempts.`)
+            console.log(`Congratulations! You have guessed the correct number in ${attemptsMade} attempts.`)
             win = true
         } else if (guess < targetNumber) {
             console.log(`Incorrect. The number is greater than ${guess}`)
@@ -72,8 +75,30 @@ async function main() {
             }
         }
     }
-    
-    rl.close()
+}
+
+async function main() {
+    let playAgain = true
+
+    while (playAgain) {
+        await playGame();
+
+        let answer;
+        while (true) {
+            answer = await prompt("Do you want to play again? (yes/no): ");
+            if (['yes', 'no'].includes(answer.toLowerCase())) break;
+            console.log("❓ Please type 'yes' or 'no'.");
+        }
+
+        playAgain = answer.toLowerCase() === 'yes';
+
+        if (playAgain) {
+                console.log("\n🔁 Starting a new game...\n");
+        } else {
+            console.log("\n👋 Thanks for playing! Goodbye!");
+            rl.close();
+        }
+    }
 }
 
 main()
